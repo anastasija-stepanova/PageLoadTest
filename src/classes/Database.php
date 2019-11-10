@@ -6,11 +6,7 @@ class Database
 
     public function __construct($host, $database, $userName, $password)
     {
-        try {
-            $this->pdo = new PDO("mysql:host=" . $host . ';dbname=' . $database, $userName, $password);
-        } catch (PDOException $e) {
-            echo $e->getMessage();
-        }
+        $this->pdo = new PDO("mysql:host=" . $host . ';dbname=' . $database, $userName, $password);
     }
 
     public function executeQuery($query, $params = [])
@@ -25,16 +21,8 @@ class Database
                 array_push($data, $row);
             }
             $stm->closeCursor();
-            return $data;
         }
-        else
-        {
-            return null;
-        }
-    }
 
-    public function quote($str)
-    {
-        return $this->pdo->quote($str);
+        return $data;
     }
 }

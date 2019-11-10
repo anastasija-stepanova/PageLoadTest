@@ -37,9 +37,13 @@ class WebPageTestClient
         ];
         $runTestUrl = $this->generateWptUrl(self::RUNTEST_METHOD_NAME, $params);
         $decodeJsonResponse = $this->sendRequest(self::HTTP_METHOD, $runTestUrl);
-        if ($decodeJsonResponse != null && array_key_exists('data', $decodeJsonResponse) && array_key_exists('testId',
-                $decodeJsonResponse['data'])) {
-            $testId = $decodeJsonResponse['data']['testId'];
+        if ($decodeJsonResponse != null)
+        {
+            if (array_key_exists('data', $decodeJsonResponse) && array_key_exists('testId',
+                    $decodeJsonResponse['data']))
+            {
+                $testId = $decodeJsonResponse['data']['testId'];
+            }
         }
 
         return $testId;
@@ -64,7 +68,8 @@ class WebPageTestClient
         ];
         $resultTestUrl = $this->generateWptUrl(self::RESULT_METHOD_NAME, $param);
         $decodeJsonResponse = $this->sendRequest(self::HTTP_METHOD, $resultTestUrl);
-        if ($decodeJsonResponse != null && array_key_exists('data', $decodeJsonResponse)) {
+        if ($decodeJsonResponse != null && array_key_exists('data', $decodeJsonResponse))
+        {
             ;
         }
         {
@@ -84,7 +89,8 @@ class WebPageTestClient
     private function generateGetParams($params)
     {
         $paramsArray = [];
-        foreach ($params as $key => $value) {
+        foreach ($params as $key => $value)
+        {
             $paramsArray[] = "$key=$value";
         }
 
@@ -97,7 +103,8 @@ class WebPageTestClient
         $contentResponse = $response->getBody()->getContents();
         $decodeContentResponse = json_decode($contentResponse, true);
         $jsonLastError = json_last_error();
-        if ($jsonLastError == JSON_ERROR_NONE) {
+        if ($jsonLastError == JSON_ERROR_NONE)
+        {
             return $decodeContentResponse;
         }
 
