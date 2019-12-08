@@ -3,6 +3,7 @@
         "guzzlehttp/guzzle": "~6.0",
         "ext-mysqli": "*",
         "ext-json": "*",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "twig/twig": "^2.0"
     }
 }

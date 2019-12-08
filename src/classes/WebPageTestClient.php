@@ -8,6 +8,7 @@ class WebPageTestClient
     const RUNTEST_METHOD_NAME = 'runtest';
     const RESULT_METHOD_NAME = 'jsonResult';
     const STATUS_METHOD_NAME = 'testStatus';
+    const LOCATIONS_METHOD_NAME = 'getLocations';
     const HTTP_METHOD = 'GET';
     const RESPONSE_FORMAT = 'json';
     const FILE_EXTENSION = '.php';
@@ -17,21 +18,23 @@ class WebPageTestClient
     const PARAM_FORMAT = 'f';
     const PARAM_KEY = 'k';
     const PARAM_TEST = 'test';
+    const PARAM_LOCATION = 'location';
     private $apiKey;
     private $client;
 
-    public function __construct($apiKey = Config::APY_KEY)
+    public function __construct($apiKey)
     {
         $this->client = new Client();
         $this->apiKey = $apiKey;
     }
 
-    public function runNewTest($siteUrl)
+    public function runNewTest($siteUrl, $location)
     {
         $testId = null;
         $params = [
             self::PARAM_URL => $siteUrl,
             self::PARAM_RUNS => self::NUMBER_RUNS,
+            self::PARAM_LOCATION => $location,
             self::PARAM_FORMAT => self::RESPONSE_FORMAT,
             self::PARAM_KEY => $this->apiKey,
         ];
@@ -49,7 +52,7 @@ class WebPageTestClient
         return $testId;
     }
 
-    public function checkStateTest($testId)
+    public function checkTestState($testId)
     {
         $params = [
             self::PARAM_FORMAT => self::RESPONSE_FORMAT,
@@ -70,13 +73,26 @@ class WebPageTestClient
         $decodeJsonResponse = $this->sendRequest(self::HTTP_METHOD, $resultTestUrl);
         if ($decodeJsonResponse != null && array_key_exists('data', $decodeJsonResponse))
         {
-            ;
-        }
-        {
             $arrayTestResults = $decodeJsonResponse['data'];
         }
 
         return $arrayTestResults;
+    }
+
+    public function getLocations()
+    {
+        $param = [
+            self::PARAM_FORMAT => self::RESPONSE_FORMAT,
+            self::PARAM_KEY => $this->apiKey,
+        ];
+        $locationUrl = $this->generateWptUrl(self::LOCATIONS_METHOD_NAME, $param);
+        $decodeJsonResponse = $this->sendRequest(self::HTTP_METHOD, $locationUrl);
+        if ($decodeJsonResponse != null && array_key_exists('data', $decodeJsonResponse))
+        {
+            $arrayLocations = $decodeJsonResponse['data'];
+        }
+
+        return $arrayLocations;
     }
 
     private function generateWptUrl($methodName, $params)

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ .'/migration_utils.php';
+require_once __DIR__ . '/migration_utils.php';
 
 $conn = connectDB();
 $files = getMigrationFiles($conn);
