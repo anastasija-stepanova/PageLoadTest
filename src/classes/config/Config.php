@@ -12,5 +12,6 @@ class Config
     const MYSQL_PASSWORD = '1234';
     const MYSQL_DATABASE = 'load_test';
     const MYSQL_PORT = '3306';
-    const FIRST_PARAM_ARGV = 1;
+
+    const DB_TABLE_VERSIONS = 'versions';
 }
