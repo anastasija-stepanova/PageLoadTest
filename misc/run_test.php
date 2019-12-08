@@ -1,20 +1,48 @@
 <?php
 require_once __DIR__ . '/../src/autoloader.inc.php';
 
-if ($argc != 2)
+const INDEX_LOCATION = 'location';
+const INDEX_URL = 'url';
+const INDEX_ID = 'id';
+const INDEX_DOMAIN_NAME = 'domain_name';
+
+$databaseDataManager = new DatabaseDataManager();
+$usersId = $databaseDataManager->getUsersId();
+
+foreach ($usersId as $userId)
 {
-    echo 'Неверно передан параметр!';
-    exit();
+    $userDomainsData = $databaseDataManager->getUserDomains($userId);
+    $apiKey = $databaseDataManager->getUserApiKey($userId);
+
+    foreach ($userDomainsData as $userDomain)
+    {
+        if (array_key_exists(INDEX_ID, $userDomain))
+        {
+            $domainId = $userDomain[INDEX_ID];
+            $userUrls = $databaseDataManager->getUserUrlsData($userId, $domainId);
+            $userLocations = $databaseDataManager->getUserLocations($userId, $domainId);
+
+            if (array_key_exists(INDEX_DOMAIN_NAME, $userDomain))
+            {
+                $domainName = $userDomain[INDEX_DOMAIN_NAME];
+                runNewTest($databaseDataManager, $apiKey, $userId, $userUrls, $userLocations, $domainName);
+            }
+        }
+    }
 }
 
-$siteUrl = $argv[1];
-$database = new Database(Config::MYSQL_HOST, Config::MYSQL_DATABASE, Config::MYSQL_USERNAME, Config::MYSQL_PASSWORD);
-$apiKey = $database->executeQuery("SELECT api_key FROM " . DatabaseTable::USER .
-    " WHERE id = ?", [Config::DEFAULT_USER_ID], PDO::FETCH_COLUMN);
-$client = new WebPageTestClient($apiKey);
-$wptTestId = $client->runNewTest($siteUrl);
-$database->executeQuery("INSERT INTO " . DatabaseTable::TEST_INFO . " (user_id, test_id) 
-                         VALUES (?, ?)", [Config::DEFAULT_USER_ID, $wptTestId]);
-$dataArray = $database->selectOneRow("SELECT id FROM " . DatabaseTable::TEST_INFO .
-    " WHERE test_id = ?", [$wptTestId]);
-echo (array_key_exists('id', $dataArray)) ? $dataArray['id'] : '';
+function runNewTest($databaseDataProvider, $apiKey, $userId, $userUrls, $userLocations, $userDomain)
+{
+    foreach ($userUrls as $userUrl)
+    {
+        $fullUrl = $userDomain . $userUrl[INDEX_URL];
+
+        $client = new WebPageTestClient($apiKey);
+
+        foreach ($userLocations as $userLocation)
+        {
+            $wptTestId = $client->runNewTest($fullUrl, $userLocation[INDEX_LOCATION]);
+            $databaseDataProvider->saveTestInfo($userId, $userUrl, $userLocation, $wptTestId);
+        }
+    }
+}

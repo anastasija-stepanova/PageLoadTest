@@ -4,12 +4,12 @@ class Database
 {
     private $pdo;
 
-    public function __construct($host, $database, $userName, $password)
+    public function __construct(string $host, string $database, string $userName, string $password)
     {
         $this->pdo = new PDO("mysql:host=" . $host . ';dbname=' . $database, $userName, $password);
     }
 
-    public function executeQuery($query, $params = [], $style = PDO::FETCH_ASSOC)
+    public function executeQuery(string $query, array $params = [], $style = PDO::FETCH_ASSOC): array
     {
         $data = [];
         $stm = $this->pdo->prepare($query);
@@ -26,7 +26,7 @@ class Database
         return $data;
     }
 
-    public function selectOneRow($query, $params = [])
+    public function selectOneRow(string $query, array $params = []): array
     {
         $result = $this->executeQuery($query, $params);
 

@@ -11,7 +11,7 @@ class Autoloader
      *
      * @param string $basePath
      */
-    public function __construct($basePath = __DIR__)
+    public function __construct(string $basePath = __DIR__)
     {
         $this->findAllFiles($basePath);
     }
@@ -19,7 +19,7 @@ class Autoloader
     /**
      * @param string $fileName
      */
-    public function autoload($fileName)
+    public function autoload(string $fileName): void
     {
         if (array_key_exists($fileName, $this->knownFiles))
         {
@@ -27,7 +27,7 @@ class Autoloader
         }
     }
 
-    private function findAllFiles($basePath)
+    private function findAllFiles(string $basePath): void
     {
         $paths = scandir($basePath);
         foreach ($paths as $path)
